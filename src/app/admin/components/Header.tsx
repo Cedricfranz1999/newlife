@@ -16,16 +16,34 @@ import { DialogTitle } from "~/components/ui/dialog";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { useAdminStore } from "~/app/store/adminStore";
 import { Label } from "~/components/ui/label";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 export default function Header() {
   const router = useRouter();
+  const pathname = usePathname();
   const username = useAdminStore((state) => state.username);
   const clearUsername = useAdminStore((state) => state.logout);
 
   const handleLogout = () => {
     clearUsername();
     router.push("/sign-in");
+  };
+
+  const navigationItems = [
+    {
+      href: "/admin/dashboard",
+      icon: <LayoutDashboard className="h-5 w-5" />,
+      label: "Dashboard",
+    },
+    {
+      href: "/admin/users",
+      icon: <Users className="h-5 w-5" />,
+      label: "Users",
+    },
+  ];
+
+  const isActive = (href: string) => {
+    return pathname === href || pathname.startsWith(href + "/");
   };
 
   return (
@@ -61,30 +79,28 @@ export default function Header() {
                   height={32}
                   className="rounded-md"
                 />
-                <Label className="text-2xl font-bold text-[#267959]">NLCM</Label>
+                <Label className="text-2xl font-bold text-[#267959]">
+                  NLCM
+                </Label>
               </div>
 
-              {[
-                {
-                  href: "/admin/dashboard",
-                  icon: <LayoutDashboard className="h-5 w-5" />,
-                  label: "Dashboard",
-                },
-                {
-                  href: "/admin/users",
-                  icon: <Users className="h-5 w-5" />,
-                  label: "Users",
-                },
-              ].map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="flex items-center gap-4 rounded-lg px-3 py-2.5 text-gray-700 transition-all hover:bg-[#267959] hover:text-white"
-                >
-                  {item.icon}
-                  {item.label}
-                </Link>
-              ))}
+              {navigationItems.map((item) => {
+                const active = isActive(item.href);
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`flex items-center gap-4 rounded-lg px-3 py-2.5 transition-all ${
+                      active
+                        ? "bg-[#267959] text-white shadow-sm"
+                        : "text-gray-700 hover:bg-[#267959] hover:text-white"
+                    }`}
+                  >
+                    {item.icon}
+                    {item.label}
+                  </Link>
+                );
+              })}
             </nav>
           </SheetContent>
         </Sheet>

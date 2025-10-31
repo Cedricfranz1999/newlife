@@ -10,10 +10,10 @@ const Sidebar = () => {
   const isActive = (path: string) => pathname.startsWith(path);
 
   return (
-    <div className="hidden border-r border-gray-200 bg-white md:block">
+    <div className="white hidden border-r bg-[#267959] md:block">
       <div className="flex h-full max-h-screen flex-col gap-2">
         {/* Header */}
-        <div className="flex h-14 items-center border-b border-gray-200 px-4 lg:h-[60px] lg:px-6">
+        <div className="flex h-14 items-center border-b border-white px-4 lg:h-[60px] lg:px-6">
           <Link href="/admin/dashboard" className="flex items-center gap-2">
             <Image
               src="/logo.png"
@@ -22,7 +22,7 @@ const Sidebar = () => {
               height={32}
               className="rounded-full"
             />
-            <Label className="text-2xl font-bold text-[#267959]">NLCM</Label>
+            <Label className="text-2xl font-bold text-white">NLCM</Label>
           </Link>
         </div>
 
@@ -34,8 +34,8 @@ const Sidebar = () => {
               href="/admin/dashboard"
               className={`flex items-center gap-3 rounded-lg px-3 py-2.5 transition-all ${
                 isActive("/admin/dashboard")
-                  ? "bg-[#267959] text-white shadow-sm"
-                  : "text-gray-700 hover:bg-gray-100"
+                  ? "bg-white text-[#267959] shadow-sm"
+                  : "text-gray-200 hover:bg-gray-700 hover:text-white"
               }`}
             >
               <LayoutDashboard className="h-5 w-5" />
@@ -47,8 +47,8 @@ const Sidebar = () => {
               href="/admin/users"
               className={`flex items-center gap-3 rounded-lg px-3 py-2.5 transition-all ${
                 isActive("/admin/users")
-                  ? "bg-[#267959] text-white shadow-sm"
-                  : "text-gray-700 hover:bg-gray-100"
+                  ? "bg-white text-[#267959] shadow-sm"
+                  : "text-gray-200 hover:bg-gray-700 hover:text-white"
               }`}
             >
               <Users className="h-5 w-5" />
