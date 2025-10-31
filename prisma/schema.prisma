@@ -1,0 +1,61 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+model Admin {
+  id        Int      @id @default(autoincrement())
+  name      String   @default("ADMIN")
+  username  String   @unique
+  password  String
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+}
+
+
+
+model Members {
+    id                         Int      @id @default(autoincrement())
+    userType                   UserType  @default(MEMBER)
+    image                      String?
+    lastName                   String
+    firstName                  String
+    middleName                 String?
+    fathesrName                String?
+    mothersName                String?
+    dateofBirth                DateTime
+    placeOfbirth               String
+    sex                        String
+    height                     String?
+    weight                     String?
+    presentAddress             String?
+    occupation                 String?
+    bloodType                  String?
+    jobExperience              String?
+    cellphoneNumber            String?
+    homeTelephoneNumber        String?
+    email                      String?
+    spouseName                 String?
+    birthOrder                 String?
+    citizenship                String?    @default("Filipino")
+    previousReligion           String?
+    dateAcceptedTheLord        DateTime?
+    personLedYouToTheLord      String?
+    firstDayOfChurchAttendance DateTime?
+    dateWaterBaptized          DateTime?
+    dateSpiritBaptized         DateTime?
+    createdAt                  DateTime   @default(now())
+    updatedAt                  DateTime   @default(now())
+} 
+
+enum UserType {
+    MEMBER
+    GUEST
+}
