@@ -2,7 +2,7 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -10,6 +10,7 @@ datasource db {
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
+
 model Admin {
   id        Int      @id @default(autoincrement())
   name      String   @default("ADMIN")
@@ -19,43 +20,124 @@ model Admin {
   createdAt DateTime @default(now())
 }
 
-
-
 model Members {
-    id                         Int      @id @default(autoincrement())
-    userType                   UserType  @default(MEMBER)
-    image                      String?
-    lastName                   String
-    firstName                  String
-    middleName                 String?
-    fathesrName                String?
-    mothersName                String?
-    dateofBirth                DateTime
-    placeOfbirth               String
-    sex                        String
-    height                     String?
-    weight                     String?
-    presentAddress             String?
-    occupation                 String?
-    bloodType                  String?
-    jobExperience              String?
-    cellphoneNumber            String?
-    homeTelephoneNumber        String?
-    email                      String?
-    spouseName                 String?
-    birthOrder                 String?
-    citizenship                String?    @default("Filipino")
-    previousReligion           String?
-    dateAcceptedTheLord        DateTime?
-    personLedYouToTheLord      String?
-    firstDayOfChurchAttendance DateTime?
-    dateWaterBaptized          DateTime?
-    dateSpiritBaptized         DateTime?
-    createdAt                  DateTime   @default(now())
-    updatedAt                  DateTime   @default(now())
-} 
+  id                         Int        @id @default(autoincrement())
+  userType                   UserType   @default(MEMBER)
+  image                      String?
+  lastName                   String
+  firstName                  String
+  middleName                 String?
+  fathesrName                String?
+  mothersName                String?
+  dateofBirth                DateTime
+  placeOfbirth               String
+  sex                        String
+  height                     String?
+  weight                     String?
+  presentAddress             String?
+  occupation                 String?
+  bloodType                  String?
+  jobExperience              String?
+  cellphoneNumber            String?
+  homeTelephoneNumber        String?
+  email                      String?
+  spouseName                 String?
+  birthOrder                 String?
+  citizenship                String?    @default("Filipino")
+  previousReligion           String?
+  dateAcceptedTheLord        DateTime?
+  personLedYouToTheLord      String?
+  firstDayOfChurchAttendance DateTime?
+  dateWaterBaptized          DateTime?
+  dateSpiritBaptized         DateTime?
+  createdAt                  DateTime   @default(now())
+  updatedAt                  DateTime   @default(now())
+
+  AttendanceMembers AttendanceMembers[]
+  TithesOfferings   TithesOfferings[]
+  PrayerRequests    PrayerRequest[]
+}
+
+model Attendance {
+  id          Int        @id @default(autoincrement())
+  date        DateTime   @default(now())
+  type        AttendanceType @default(SUNDAY_SERVICE)
+  createdAt   DateTime   @default(now())
+  AttendanceMembers AttendanceMembers[]
+}
+
+model TithesOfferings {
+  id            Int         @id @default(autoincrement())
+  memberId      Int?
+  date          DateTime    @default(now())
+  type          OfferingType
+  amount        Float
+  note           String?
+  receiptNumber String?
+  isAnonymous   Boolean     @default(false)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  member        Members?     @relation(fields: [memberId], references: [id], onDelete: Cascade)
+}
+
+model PrayerRequest {
+  id          Int       @id @default(autoincrement())
+  memberId    Int?
+  title       String
+  description String
+  note        String?
+  dateToPray  DateTime?
+  status      PrayerRequestStatus @default(PENDING)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  member      Members?  @relation(fields: [memberId], references: [id], onDelete: Cascade)
+}
+
+enum OfferingType {
+  TITHE
+  OFFERING
+  BUILDING_FUND
+  MISSIONS
+  SPECIAL_OFFERING
+  THANKSGIVING
+  OTHER
+}
+
+enum AttendanceType {
+  SUNDAY_SERVICE
+  BIBLE_STUDY
+  PRAYER_MEETING
+  YOUTH_SERVICE
+  MIDWEEK_SERVICE
+  SPECIAL_EVENT
+}
+
+model AttendanceMembers {
+  id            Int               @id @default(autoincrement())
+  attendanceId  Int
+  memberId      Int
+  status        AttendanceStatus  @default(PRESENT)
+  createdAt     DateTime          @default(now())
+  attendance    Attendance        @relation(fields: [attendanceId], references: [id], onDelete: Cascade)
+  member        Members           @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@unique([attendanceId, memberId])
+}
 
 enum UserType {
-    MEMBER
-    GUEST
+  MEMBER
+  GUEST
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+  EXCUSED
+}
+
+enum PrayerRequestStatus {
+  PENDING
+  DONE
+  ANSWERED
 }

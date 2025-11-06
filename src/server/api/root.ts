@@ -1,6 +1,10 @@
 import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
 import { membersRouter } from "./routers/members";
 import { authRouter } from "./routers/auth";
+import { attendanceRouter } from "./routers/attendance";
+import { attendanceMemberRouter } from "./routers/attendanceMembers";
+import { tithesOfferingsRouter } from "./routers/offering";
+import { prayerRequestRouter } from "./routers/prayerRequest";
 
 /**
  * This is the primary router for your server.
@@ -10,6 +14,10 @@ import { authRouter } from "./routers/auth";
 export const appRouter = createTRPCRouter({
   auth: authRouter,
   members: membersRouter,
+  attendance: attendanceRouter,
+  attendanceMembers: attendanceMemberRouter,
+  offering: tithesOfferingsRouter,
+  prayerRequest: prayerRequestRouter,
 });
 
 // export type definition of API

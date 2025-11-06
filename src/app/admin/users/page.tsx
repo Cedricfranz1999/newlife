@@ -40,6 +40,12 @@ import {
 } from "~/components/ui/alert-dialog";
 import { Badge } from "~/components/ui/badge";
 import { Card, CardContent } from "~/components/ui/card";
+import { Calendar } from "~/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "~/components/ui/popover";
 import {
   MoreHorizontal,
   Plus,
@@ -51,7 +57,7 @@ import {
   X,
   Loader2,
   UserPlus,
-  Calendar,
+  Calendar as CalendarIcon,
   Mail,
   Phone,
   MapPin,
@@ -70,6 +76,7 @@ import {
 import { format } from "date-fns";
 import { useToast } from "~/components/ui/use-toast";
 import { uploadImage } from "~/lib/upload/uploadImage";
+import { cn } from "~/lib/utils";
 
 type Member = {
   id: number;
@@ -254,6 +261,68 @@ const ImageUpload = ({
   );
 };
 
+// Calendar Form Field Component
+const CalendarFormField = ({
+  form,
+  name,
+  label,
+  required = false,
+}: {
+  form: any;
+  name: string;
+  label: string;
+  required?: boolean;
+}) => {
+  const [date, setDate] = useState<Date | undefined>(
+    form.watch(name) ? new Date(form.watch(name)) : undefined,
+  );
+
+  useEffect(() => {
+    if (date) {
+      form.setValue(name, format(date, "yyyy-MM-dd"));
+    }
+  }, [date, form, name]);
+
+  return (
+    <div>
+      <label className="mb-1.5 block text-xs font-medium text-gray-700 sm:text-sm">
+        {label} {required && <span className="text-red-500">*</span>}
+      </label>
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            className={cn(
+              "w-full justify-start text-left text-xs font-normal focus-visible:ring-[#2c7451] sm:text-sm",
+              !date && "text-gray-400",
+            )}
+          >
+            <CalendarIcon className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+            {date ? format(date, "PPP") : <span>Pick a date</span>}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto bg-white p-0">
+          <Calendar
+            mode="single"
+            selected={date}
+            onSelect={setDate}
+            initialFocus
+            captionLayout="dropdown"
+            fromYear={1900}
+            toYear={new Date().getFullYear()}
+          />
+        </PopoverContent>
+      </Popover>
+      {form.formState.errors[name] && (
+        <p className="mt-1 flex items-center gap-1 text-xs text-red-500">
+          <X className="h-3 w-3" />
+          {form.formState.errors[name]?.message as string}
+        </p>
+      )}
+    </div>
+  );
+};
+
 // Personal Info Section
 const PersonalInfoSection = ({
   form,
@@ -309,16 +378,17 @@ const PersonalInfoSection = ({
         { name: "middleName", label: "Middle Name" },
         { name: "fathesrName", label: "Father's Name" },
         { name: "mothersName", label: "Mother's Name" },
-        {
-          name: "dateofBirth",
-          label: "Date of Birth",
-          type: "date",
-          required: true,
-        },
         { name: "placeOfbirth", label: "Place of Birth", required: true },
       ].map((field) => (
         <FormField key={field.name} form={form} {...field} />
       ))}
+
+      <CalendarFormField
+        form={form}
+        name="dateofBirth"
+        label="Date of Birth"
+        required={true}
+      />
 
       <div>
         <label className="mb-1.5 block text-xs font-medium text-gray-700 sm:text-sm">
@@ -392,30 +462,34 @@ const SpiritualInfoSection = ({ form }: { form: any }) => (
     </h3>
     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
       {[
-        {
-          name: "dateAcceptedTheLord",
-          label: "Date Accepted The Lord",
-          type: "date",
-        },
         { name: "personLedYouToTheLord", label: "Person Led You To The Lord" },
-        {
-          name: "firstDayOfChurchAttendance",
-          label: "First Day Of Church Attendance",
-          type: "date",
-        },
-        {
-          name: "dateWaterBaptized",
-          label: "Date Water Baptized",
-          type: "date",
-        },
-        {
-          name: "dateSpiritBaptized",
-          label: "Date Spirit Baptized",
-          type: "date",
-        },
       ].map((field) => (
         <FormField key={field.name} form={form} {...field} />
       ))}
+
+      <CalendarFormField
+        form={form}
+        name="dateAcceptedTheLord"
+        label="Date Accepted The Lord"
+      />
+
+      <CalendarFormField
+        form={form}
+        name="firstDayOfChurchAttendance"
+        label="First Day Of Church Attendance"
+      />
+
+      <CalendarFormField
+        form={form}
+        name="dateWaterBaptized"
+        label="Date Water Baptized"
+      />
+
+      <CalendarFormField
+        form={form}
+        name="dateSpiritBaptized"
+        label="Date Spirit Baptized"
+      />
     </div>
   </div>
 );
@@ -579,7 +653,7 @@ const ViewMemberDetails = ({
             value: member.dateofBirth
               ? format(new Date(member.dateofBirth), "MMM dd, yyyy")
               : "—",
-            icon: Calendar,
+            icon: CalendarIcon,
           },
           { label: "Place of Birth", value: member.placeOfbirth, icon: MapPin },
           { label: "Sex", value: member.sex || "—", badge: true },
@@ -630,7 +704,7 @@ const ViewMemberDetails = ({
           value: member.dateAcceptedTheLord
             ? format(new Date(member.dateAcceptedTheLord), "MMM dd, yyyy")
             : "—",
-          icon: Calendar,
+          icon: CalendarIcon,
         },
         {
           label: "Person Led You To The Lord",
@@ -644,21 +718,21 @@ const ViewMemberDetails = ({
                 "MMM dd, yyyy",
               )
             : "—",
-          icon: Calendar,
+          icon: CalendarIcon,
         },
         {
           label: "Date Water Baptized",
           value: member.dateWaterBaptized
             ? format(new Date(member.dateWaterBaptized), "MMM dd, yyyy")
             : "—",
-          icon: Calendar,
+          icon: CalendarIcon,
         },
         {
           label: "Date Spirit Baptized",
           value: member.dateSpiritBaptized
             ? format(new Date(member.dateSpiritBaptized), "MMM dd, yyyy")
             : "—",
-          icon: Calendar,
+          icon: CalendarIcon,
         },
       ]}
     />
@@ -904,7 +978,7 @@ const MemberCard = ({
         </div>
 
         <div className="flex items-center gap-2 text-xs text-gray-600">
-          <Calendar className="h-3 w-3 flex-shrink-0 text-gray-400" />
+          <CalendarIcon className="h-3 w-3 flex-shrink-0 text-gray-400" />
           <span className="truncate">
             {format(new Date(member.dateofBirth), "MMM dd, yyyy")}
           </span>
@@ -1482,7 +1556,7 @@ export default function MembersList() {
                         </td>
                         <td className="p-4">
                           <div className="flex items-center gap-2 text-sm text-gray-600">
-                            <Calendar className="h-4 w-4 text-gray-400" />
+                            <CalendarIcon className="h-4 w-4 text-gray-400" />
                             {format(
                               new Date(member.dateofBirth),
                               "MMM dd, yyyy",
@@ -1569,7 +1643,7 @@ export default function MembersList() {
 
       {/* Edit Modal */}
       <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-        <DialogContent className="max-h-[90vh] w-[95vw] max-w-6xl overflow-y-auto">
+        <DialogContent className="max-h-[90vh] w-[95vw] max-w-6xl overflow-y-auto md:max-w-[1200px]">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-lg sm:text-2xl">
               <Edit className="h-5 w-5 text-[#2c7451] sm:h-6 sm:w-6" />
